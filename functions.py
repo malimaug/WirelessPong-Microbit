@@ -86,7 +86,7 @@ def initialize_positions():
     return player1, player2, ball
 
 
-def package_game_positions(player1: dict, player2: dict, ball) -> dict:
+def package_game_positions(player1: dict, player2: dict, ball: dict) -> dict:
     """
     The function packages all the positions into a form that the debug function uses
 
@@ -94,7 +94,7 @@ def package_game_positions(player1: dict, player2: dict, ball) -> dict:
     ----------
     player1 : player1's data (dict)
     player2 : player2's data (dict)
-    ball: the dictionary containing all data about the ball (dict)
+    ball: ball's data (dict)
 
     Returns
     ------
@@ -109,31 +109,44 @@ def package_game_positions(player1: dict, player2: dict, ball) -> dict:
     return all_positions
 
 
-def debug(game_data: dict, print_virtual_terrain: bool = False):
+def debug(player1: dict, player2: dict, ball: dict, print_virtual_terrain: bool = False, print_ball_data: bool = False):
     """
     The function allows the use for different debuging tools
 
     Parameters
     ----------
-    game_data : use package_game_position to create this dictionary (dict)
+    player1 : player1's data (dict)
+    player2 : player2's data (dict)
+    ball: ball's data (dict)
     print_virtual_terrain : allows the function to print the virtual terrain in the console (bool)
+    print_ball_data: allows the function to print the ball's data in the console (bool)
     """
 
+    if print_ball_data:
+        info = "Ball data: %s" % ball
+        print("-"*(len(info) // 3))
+        print(info)
+        print("-"*(len(info) // 3)+'\n')
+
+
     if print_virtual_terrain:
+
+        #puts all position data together
+        game_positions = package_game_positions(player1, player2, ball)
 
         #creates the terrain table
         terrain = [["-","-","-","-","-","-","-","-","-","-"],["-","-","-","-","-","-","-","-","-","-"],["-","-","-","-","-","-","-","-","-","-"],["-","-","-","-","-","-","-","-","-","-"],["-","-","-","-","-","-","-","-","-","-"]]
 
         #adds the player1 positions
-        terrain[game_data["x_player1"]][0] = "#"
-        terrain[game_data["x_player1"] - 1 ][0] = "#"
+        terrain[game_positions["x_player1"]][0] = "#"
+        terrain[game_positions["x_player1"] - 1 ][0] = "#"
 
         #adds the player2 positions
-        terrain[game_data["x_player2"]][9] = "#"
-        terrain[game_data["x_player2"] + 1 ][9] = "#"
+        terrain[game_positions["x_player2"]][9] = "#"
+        terrain[game_positions["x_player2"] + 1 ][9] = "#"
 
         #adds the ball position
-        terrain[game_data["x_ball"]][game_data["y_ball"]] = "@"
+        terrain[game_positions["x_ball"]][game_positions["y_ball"]] = "@"
 
         #display in console
         print("Debug: virtual_terrain")
@@ -148,7 +161,7 @@ def debug(game_data: dict, print_virtual_terrain: bool = False):
             print(line)
 
 
-def ball_move(player1: dict, player2: dict, ball: dict) -> dict:
+def move_ball(player1: dict, player2: dict, ball: dict) -> dict:
     """Updates the dict ball for it to be able to move
 
     Parameters
@@ -181,26 +194,31 @@ def ball_move(player1: dict, player2: dict, ball: dict) -> dict:
         new_direction_y = -ball['direction_y']
 
     # left side player2 bounce
-    if ball['x'] == x_player2 and ball['y'] == 0:
+    if ball['x'] == x_player2 and ball['y'] == 9:
         new_direction_x = -1
         new_direction_y = -ball['direction_y']
 
     # right side player2 bounce
-    if ball['x'] == x_player2 + 1 and ball['y'] == 0:
+    if ball['x'] == x_player2 + 1 and ball['y'] == 9:
         new_direction_x = 1
         new_direction_y = -ball['direction_y']
 
     # bounce on side of the screen
-    if ball['x'] == 3 or ball['x'] == 0:
+    if ball['x'] == 4 or ball['x'] == 0:
         new_direction_x = -ball['direction_x']
 
-    new_x = ball['x'] + ball['direction_x']
-    new_y = ball['y'] + ball['direction_y']
+    if ball['y'] == 9 or ball['y'] == 0:
+        new_direction_y = -ball['direction_y']
+
+    new_x = ball['x'] + new_direction_x
+    new_y = ball['y'] + new_direction_y
 
     new_ball = {"x": new_x,
                 "y": new_y,
                 "direction_x": new_direction_x,
-                "direction_y": new_direction_y}
+                "direction_y": new_direction_y,
+                "speed": ball['speed'],
+                "next_move_in": ball['next_move_in']}
 
     return new_ball
 
@@ -233,5 +251,6 @@ def check_if_alive(player1: dict, player2: dict, ball: dict) -> dict:
     # check if player2 is dead
     if x_player2 != ball['x'] and x_player2 + 1 != ball['x'] and ball['y'] == 9:
         result['player2'] = False
+
 
     return result

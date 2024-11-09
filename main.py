@@ -26,18 +26,11 @@ def game(is_player: int):
     player1, player2, ball = initialize_positions()
     game_is_running = True
 
-    #debug section
-    game_state = package_game_positions(player1, player2, ball)
-    debug(game_state, True)
-
 
     while game_is_running:
 
-        #check if players alive
-        is_alive = check_if_alive(player1, player2, ball)
-
-        if  not is_alive['player1'] and not is_alive['player2']:
-            game_is_running = False
+        # debug section
+        debug(player1, player2, ball, True, True)
 
 
         #Chooses which player's screen to display
@@ -47,12 +40,21 @@ def game(is_player: int):
             screen(player1, player2, ball, False)
 
 
+        #check if players alive
+        is_alive = check_if_alive(player1, player2, ball)
+
+        if  (not is_alive['player1']) or (not is_alive['player2']):
+            game_is_running = False
+            break
+
+
         #player movement
 
 
 
         #ball movement
-        ball = ball_move(player1, player2, ball)
+        ball = move_ball(player1, player2, ball)
+
 
         sleep(500)
 
