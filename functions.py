@@ -72,8 +72,8 @@ def initialize_positions():
     player2 :  a dictionary containing player2's position, and it's score (dict)
     ball: a dictionary containing all the ball's data (dict)
     """
-    player1 = {'x': 2, 'score': 0}
-    player2 = {'x': 2, 'score': 0}
+    player1 = {'x': 2, 'score': 0, 'move': 0}
+    player2 = {'x': 2, 'score': 0, 'move': 0}
 
     y_ball = random.randint(4, 5)
     ball = {'x': 2,
@@ -119,7 +119,7 @@ def debug(player1: dict, player2: dict, ball: dict, print_virtual_terrain: bool 
     player2 : player2's data (dict)
     ball: ball's data (dict)
     print_virtual_terrain : allows the function to print the virtual terrain in the console (bool)
-    print_ball_data: allows the function to print the ball's data in the console (bool)
+    print_ball_data : allows the function to print the ball's data in the console (bool)
     """
 
     if print_ball_data:
@@ -254,3 +254,54 @@ def check_if_alive(player1: dict, player2: dict, ball: dict) -> dict:
 
 
     return result
+
+
+def move_players(player1, player2):
+    """Moves the players to the position they should be
+
+    Parameters
+    ----------
+    player1 : player1's data (dict)
+    player2 : player2's data (dict)
+
+    Returns
+    -------
+    new_player1 : player1's new data (dict)
+    new_player2 : player2's new data (dict)
+    """
+    # player1 movement
+    if 5 > player1['x'] > 1:
+        player1['x'] = player1['x'] + player1['move']
+
+    # player2 movement
+    if 3 > player2['x'] > -1:
+        player2['x'] = player2['x'] + player2['move']
+
+    player2['move'] = 0
+    player1['move'] = 0
+    return player1, player2
+
+
+def get_inputs(player1: dict, player2: dict):
+    """Detects the inputs from the two players
+
+    Parameters
+    ----------
+    player1 : player1's data (dict)
+    player2 : player2's data (dict)
+
+    Returns
+    -------
+    player1 : player1 dictionary with an updated move information (dict)
+    player2 : player2 dictionary with an updated move information (dict)
+    """
+
+    # player1 movement
+    if button_a.was_pressed() and (not button_b.was_pressed()):
+        player1['move'] = 1
+
+    if button_b.was_pressed() and (not button_a.was_pressed()):
+        print("b was pressed")
+        player2['move'] = -1
+
+    return player1, player2

@@ -1,9 +1,8 @@
 from functions import *
 
-
 """
  43210 player1
-0--##-4
+0-##--4
 1-----3
 2-----2
 3-----1
@@ -16,8 +15,6 @@ from functions import *
 9--##-4
  01234 player2
 """
-
-
 
 
 def game(is_player: int):
@@ -41,27 +38,30 @@ def game(is_player: int):
 
 
         #check if players alive
-        is_alive = check_if_alive(player1, player2, ball)
+        """is_alive = check_if_alive(player1, player2, ball)
 
         if  (not is_alive['player1']) or (not is_alive['player2']):
             game_is_running = False
             break
-
+        
+        """
+        #get players inputs
+        player1, player2 = get_inputs(player1, player2)
 
         #player movement
-
+        player1, player2 = move_players(player1, player2)
 
 
         #ball movement
         ball = move_ball(player1, player2, ball)
 
 
-        sleep(500)
+        sleep(10000)
 
     #end game
     print("game over")
 
 
 
-game(2)
+game(1)
 
