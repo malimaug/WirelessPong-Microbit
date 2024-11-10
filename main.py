@@ -1,5 +1,5 @@
 from functions import *
-
+import radio
 """
  43210 player1
 0-##--4
@@ -16,6 +16,12 @@ from functions import *
  01234 player2
 """
 
+radio.config(channel=0)
+radio.on()
+
+
+
+
 
 def game(is_player: int):
 
@@ -27,36 +33,38 @@ def game(is_player: int):
     while game_is_running:
 
         # debug section
-        debug(player1, player2, ball, True, True)
+        debug(player1, player2, ball, True, False)
 
-
+        """
         #Chooses which player's screen to display
         if is_player == 1:
             screen(player1, player2, ball, True)
         else:
             screen(player1, player2, ball, False)
-
+        """
 
         #check if players alive
-        """is_alive = check_if_alive(player1, player2, ball)
+        is_alive = check_if_alive(player1, player2, ball)
 
         if  (not is_alive['player1']) or (not is_alive['player2']):
             game_is_running = False
             break
         
-        """
+
         #get players inputs
-        player1, player2 = get_inputs(player1, player2)
+        player1 = get_inputs(player1)
+        player2 = get_wireless_inputs(player2)
+
 
         #player movement
         player1, player2 = move_players(player1, player2)
 
 
         #ball movement
-        ball = move_ball(player1, player2, ball)
+        ball = ball #move_ball(player1, player2, ball)
 
 
-        sleep(10000)
+        sleep(500)
 
     #end game
     print("game over")

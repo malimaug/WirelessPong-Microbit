@@ -1,4 +1,5 @@
 from microbit import *
+import radio
 import random
 
 def screen(player1: dict, player2: dict, ball: dict, is_player1: bool):
@@ -270,38 +271,75 @@ def move_players(player1, player2):
     new_player2 : player2's new data (dict)
     """
     # player1 movement
-    if 5 > player1['x'] > 1:
-        player1['x'] = player1['x'] + player1['move']
+    #virtual left
+    if player1['x'] > 1 and player1['move'] == -1:
+        player1['x'] = player1['x'] - 1
+
+    #virtual right
+    if player1['x'] < 4 and player1['move'] == 1:
+        player1['x'] = player1['x'] + 1
 
     # player2 movement
-    if 3 > player2['x'] > -1:
-        player2['x'] = player2['x'] + player2['move']
+    #virtual left
+    if player2['x'] > 0 and player2['move'] == -1:
+        player2['x'] = player2['x'] - 1
+
+    #virtual right
+    if player2['x'] < 3 and player2['move'] == 1:
+        player2['x'] = player2['x'] + 1
 
     player2['move'] = 0
     player1['move'] = 0
+    print(player1)
+    print(player2)
     return player1, player2
 
 
-def get_inputs(player1: dict, player2: dict):
+def get_inputs(player1: dict):
     """Detects the inputs from the two players
 
     Parameters
     ----------
     player1 : player1's data (dict)
-    player2 : player2's data (dict)
 
     Returns
     -------
     player1 : player1 dictionary with an updated move information (dict)
-    player2 : player2 dictionary with an updated move information (dict)
     """
 
     # player1 movement
-    if button_a.was_pressed() and (not button_b.was_pressed()):
+    if button_a.was_pressed():
         player1['move'] = 1
+        print("a was pressed")
+
+    if button_b.was_pressed():
+        player1['move'] = -1
+        print("b was pressed")
+
+    return player1
+
+
+def send_wireless_inputs():
+    radio.config(channel=0)
+    radio.on()
+
+    move = 0
+
+    if button_a.was_pressed() and (not button_b.was_pressed()):
+        move = -1
 
     if button_b.was_pressed() and (not button_a.was_pressed()):
-        print("b was pressed")
-        player2['move'] = -1
+        move = 1
 
-    return player1, player2
+    radio.send(str(move))
+
+
+def get_wireless_inputs(player2):
+
+    try:
+        move = int(radio.receive())
+    except:
+        move = 0
+
+    player2['move'] = move
+    return player2
