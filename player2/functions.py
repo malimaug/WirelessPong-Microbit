@@ -1,6 +1,5 @@
 from microbit import *
 import radio
-import random
 
 def screen(data: dict):
     """It displays the right information on the LED matrix of the microbit depending on which players uses it
